@@ -1,8 +1,16 @@
 from flask import Flask, request, jsonify
 from db import get_db
+import os
 
 app = Flask(__name__)
 db = get_db()
+
+# Endpoint per generare un errore fatale
+@app.route('/fail', methods=['GET'])
+def fail_container():
+    """Force the container to fail by exiting the process."""
+    os._exit(1) 
+
 
 # Endpoint for initializing the bottle
 @app.route('/initialize', methods=['POST'])
@@ -51,4 +59,5 @@ def get_bottle():
     return jsonify(bottle)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    port = int(os.getenv("FLASK_RUN_PORT", 5000))  # Default to 5000
+    app.run(host='0.0.0.0', port=port)
